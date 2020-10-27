@@ -13,7 +13,7 @@ pipeline {
             steps {
                 parallel(
                         "install": {
-                            scripts {
+                            script {
                                 try {
                                     sh "mvn -U clean test cobertura:cobertura -Dcobertura.report.format=xml"
                                 } catch(Exception err){
@@ -23,7 +23,7 @@ pipeline {
                             }
                         },
                         "sonar": {
-                            scripts {                            
+                            script {                            
                                 try {
                                     sh "mvn sonar:sonar"
                                 } catch(error){

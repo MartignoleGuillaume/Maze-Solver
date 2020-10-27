@@ -13,20 +13,25 @@ pipeline {
             steps {
                 parallel(
                         "install": {
-                            try {
-                                sh "mvn -U clean test cobertura:cobertura -Dcobertura.report.format=xml"
-                            } catch(Exception err){
-                                echo 'Maven clean install failed'
-                                currentBuild.result = 'FAILURE'                               
+                            scripts {
+                                try {
+                                    sh "mvn -U clean test cobertura:cobertura -Dcobertura.report.format=xml"
+                                } catch(Exception err){
+                                    echo 'Maven clean install failed'
+                                    currentBuild.result = 'FAILURE'                               
+                                }
                             }
                         },
                         "sonar": {
-                            try {
-                                sh "mvn sonar:sonar"
-                            } catch(error){
-                                echo "The sonar server could not be reached ${error}"
+                            scripts {                            
+                                try {
+                                    sh "mvn sonar:sonar"
+                                } catch(error){
+                                    echo "The sonar server could not be reached ${error}"
+                                }
                             }
                         }
+                    }
                 )
             }
             post {

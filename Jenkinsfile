@@ -4,7 +4,7 @@ pipeline {
     tools {
 /**      Uncomment if want to have specific java versions installed, otherwise maven tool will use jenkins default embedded java 8
  */
-//        jdk 'jdk8'
+        jdk 'jdk8'
         maven 'maven3'
     }
 
@@ -13,14 +13,19 @@ pipeline {
             steps {
                 parallel(
                         install: {
-                            sh "mvn -U clean test cobertura:cobertura -Dcobertura.report.format=xml"
+                            try {
+                                sh "mvn -U clean test cobertura:cobertura -Dcobertura.report.format=xml"
+                            } catch(Exception err){
+                                echo 'Maven clean install failed'
+                                currentBuild.result = 'FAILURE'                               
+                            }
                         },
                         sonar: {
-                                try {
-                                    sh "mvn sonar:sonar"
-                                } catch(error){
-                                    echo "The sonar server could not be reached ${error}"
-                                }
+                            try {
+                                sh "mvn sonar:sonar"
+                            } catch(error){
+                                echo "The sonar server could not be reached ${error}"
+                            }
                         }
                 )
             }
@@ -38,5 +43,10 @@ pipeline {
                 }
             }
         }
+    }
+        // configure Pipeline-specific options
+    options {
+        // keep only last 10 builds
+        buildDiscarder(logRotator(numToKeepStr: '10'))
     }
 }

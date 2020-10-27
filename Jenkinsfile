@@ -4,7 +4,7 @@ pipeline {
     tools {
 /**      Uncomment if want to have specific java versions installed, otherwise maven tool will use jenkins default embedded java 8
  */
-        jdk 'jdk8'
+       // jdk 'jdk8'
         maven 'maven3'
     }
 
@@ -12,7 +12,7 @@ pipeline {
         stage('install and sonar parallel') {
             steps {
                 parallel(
-                        install: {
+                        "install": {
                             try {
                                 sh "mvn -U clean test cobertura:cobertura -Dcobertura.report.format=xml"
                             } catch(Exception err){
@@ -20,7 +20,7 @@ pipeline {
                                 currentBuild.result = 'FAILURE'                               
                             }
                         },
-                        sonar: {
+                        "sonar": {
                             try {
                                 sh "mvn sonar:sonar"
                             } catch(error){

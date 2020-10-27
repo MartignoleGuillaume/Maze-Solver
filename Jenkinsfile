@@ -16,7 +16,11 @@ pipeline {
                             sh "mvn -U clean test cobertura:cobertura -Dcobertura.report.format=xml"
                         },
                         sonar: {
-                            sh "mvn sonar:sonar"
+                                try {
+                                    sh "mvn sonar:sonar"
+                                } catch(error){
+                                    echo "The sonar server could not be reached ${error}"
+                                }
                         }
                 )
             }

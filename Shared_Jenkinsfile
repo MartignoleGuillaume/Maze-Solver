@@ -1,0 +1,6 @@
+@Library('Software_Factory')_
+
+myDeliveryPipeline {
+    branch = 'main'
+    scmUrl = 'https://github.com/MartignoleGuillaume/Software_Factory.git'
+}

@@ -1,4 +1,4 @@
-@Library('Software_Factory')_
+@Library('Software_Factory@master')_
 
 myDeliveryPipeline {
     branch = 'main'

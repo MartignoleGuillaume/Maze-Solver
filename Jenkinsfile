@@ -7,6 +7,7 @@ pipeline {
  *       in your download folder
  */
 //        jdk 'jdk8'
+
         maven 'maven3'
     }
 
@@ -14,13 +15,27 @@ pipeline {
         stage('install and sonar parallel') {
             steps {
                 parallel(
-                        install: {
-                            sh "mvn -U clean test cobertura:cobertura -Dcobertura.report.format=xml"
+                        "install": {
+                            script {
+                                try {
+                                    sh "mvn -U clean test cobertura:cobertura -Dcobertura.report.format=xml"
+                                } catch(Exception err){
+                                    echo 'Maven clean install failed'
+                                    currentBuild.result = 'FAILURE'                               
+                                }
+                            }
                         },
-                        sonar: {
-                            sh "mvn sonar:sonar"
+
+                        "sonar": {
+                            script {                            
+                                try {
+                                    sh "mvn sonar:sonar"
+                                } catch(error){
+                                    echo "The sonar server could not be reached ${error}"
+                                }
+                            }
                         }
-                )
+                    )
             }
             post {
                 always {
@@ -36,5 +51,10 @@ pipeline {
                 }
             }
         }
+    }
+        // configure Pipeline-specific options
+    options {
+        // keep only last 10 builds
+        buildDiscarder(logRotator(numToKeepStr: '10'))
     }
 }
